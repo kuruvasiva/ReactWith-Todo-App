@@ -1,132 +1,139 @@
-import { useState } from 'react';
-import './App.css';
-
+import { useState } from 'react'
+import './App.css'
 function App() {
-  const [task, setTask] = useState(["Learn React"]);
-  
+
+
+  const [task, setTask] = useState(["Learn React"])
+
   const [completed, setCompleted] = useState(["Task Completed"]);
-  const [text, setText] = useState("");
-  const [msg, SetMsg] = useState("");
 
-  const deleteTask = (index) => {
-    const updatedTasks = [...task];
-    updatedTasks.splice(index, 1);
-    setTask(updatedTasks);
-  };
+  const [text, setText] = useState("");  // intilaize text sata
 
-  const completedTheTask = (index) => {
-    const updatedTasks = [...task];
-    const [finishedTask] = updatedTasks.splice(index, 1);
-    setCompleted([...completed, finishedTask]);
-    setTask(updatedTasks);
-  };
+  const [cb, setCb] = useState(false);// check box stop auto select next text
+ 
+  const[msg,SetMsg] = useState("")
 
-  const undoTask = (index) => {
-    setTimeout(() => {
-      const updatedCompleted = [...completed];
-      const [restoredTask] = updatedCompleted.splice(index, 1);
-      setTask([...task, restoredTask]);
-      setCompleted(updatedCompleted);
-    }, 500);
-  };
+  const deleteTask = (place) => {
+    task.splice(place, 1)
+    setTask([...task])
 
+  }
+  const completedTheTask = (place) => {
+
+    setCompleted([...completed, task.splice(place, 1)])
+    setCb(false)
+    setTask([...task])
+  }
+
+  const undoTask = (place)=>{
+     setTimeout (()=>{
+      setTask([...task, completed.splice(place, 1)])
+      setCb(false)
+      setCompleted([...completed])
+     },500)
+   
+
+  }
   return (
-    <div className="container">
-      <div>
-        <h1 id='head'>TO DO List .</h1>
-      </div>
+    <>
+      <div className="container">
+        <div>
+          <h1 id='head'>TO DO List .</h1>
+        </div>
 
-      <div className="child1">
-        <input
-          type="text"
-          id="inp"
-          value={text}
-          placeholder='Enter a task'
-          onChange={(e) => setText(e.target.value)}
-        />
 
-        <button
-          id='add-btn'
-          onClick={() => {
-            SetMsg('');
-            if (text.trim() === '') {
-              SetMsg("Can't add empty task");
+
+        <div className="child1">
+          <input type="text" id="inp"
+            value={text}
+
+            placeholder='Adding the task'
+            onChange={(event) => { setText(event.target.value) }}
+          />
+
+          <button id='add-btn' onClick={() => {
+           SetMsg('') 
+             if(''==text.trim()){
+              SetMsg("Can't add empty task")
               return;
-            }
-            setTask([...task, text.trim()]);
-            setText('');
-          }}
-        >
-          Add Task
-        </button>
-      </div>
+             }
+             
+             setTask([...task, text])
+             setText('')
+          }}>Add Task</button>
+          
+        </div>
+       
+       <p id='errMsg'> {msg}</p>
 
-      <p id='errMsg'>{msg}</p>
-           
-      <div className='child2'>
-        <div className="ongoing">
-          <h1 className='bor'>Ongoing Task</h1>
+        <div className='child2'>
 
-          {task.map((item, index) => (
-            <div className='render-task' key={index}>
-              <input
-                type='checkbox'
-                aria-label="Mark task as completed"
-                onChange={() => completedTheTask(index)}
-              />
+          <div className="ongoing">
 
-              <li>{item}</li>
+            <h1 className='bor'>Ongoing Task</h1>
 
-              <img
-                src="images/edit.png"
-                alt="Edit task"
-                width="22px"
-                height="22px"
-                onClick={() => {
-                  let update_value = prompt("Previously task: " + task[index]);
-                  if (update_value === null) return;
-                  update_value = update_value.trim();
-                  SetMsg('');
-                  if (update_value === '') {
-                    SetMsg("Can't update empty task");
+            {task.map((iteam, index) =>
+            
+              <div className='render-task'>
+
+                <input type='checkbox'
+                  id={index}
+                  checked={cb}
+                  onChange={() => completedTheTask(index)}
+                />
+
+                <li>{iteam}</li>
+                <img id={index} src="images/edit.png" alt="" width="22px" height="22px" onClick={()=>{
+
+                   let update_value=prompt("Previously task: "+task[index]).trim()
+
+                   SetMsg('')                   
+                   if(update_value===''){
+                    SetMsg("Can't update empty task")
                     return;
-                  }
-                  const updatedTasks = [...task];
-                  updatedTasks.splice(index, 1, update_value);
-                  setTask(updatedTasks);
-                }}
-              />
+                   }else if(update_value === null){
+                    return;
+                   }else {
+                      task.splice(index,1,update_value)
+                      setTask([...task])
+                   }
+                   console.log(update_value.trim()+" what is forst     ")
 
-              <img
-                src="images/delete.png"
-                alt="Delete task"
-                width="22px"
-                height="22px"
-                onClick={() => deleteTask(index)}
-              />
-            </div>
-          ))}
+                }}/>
+                <img id={index} src="images/delete.png" alt="" width="22px" height="22px" onClick={() => { deleteTask(index) }} />
+
+              </div>)}
+
+          </div>
+
+          <div className="completed">
+
+
+            <h1 className='bor'>Completed Task</h1>
+
+             {completed.map((iteam,index) => 
+             
+             <div className="undo">
+
+             <img src="images/back.png" alt="Images not found" height="22px" width="22px"
+              onClick={()=>{undoTask(index)}}
+             />
+             <li>{iteam}</li>
+             </div>
+             
+             
+             
+             )}
+
+             
+          
+          </div>
+
         </div>
 
-        <div className="completed">
-          <h1 className='bor'>Completed Task</h1>
-
-          {completed.map((item, index) => (
-            <div className="undo" key={index}>
-              <img
-                src="images/back.png"
-                alt="Undo completed task"
-                height="22px"
-                width="22px"
-                onClick={() => undoTask(index)}
-              />
-              <li>{item}</li>
-            </div>
-          ))}
-        </div>
       </div>
-    </div>
-  );
+    </>
+  )
 }
 
-export default App;
+export default App
