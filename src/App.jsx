@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import './App.css'
+import animation from "js-confetti"
 function App() {
 
 
@@ -13,18 +14,23 @@ function App() {
  
   const[msg,SetMsg] = useState("")
 
-  const deleteTask = (place) => {
-    task.splice(place, 1)
-    setTask([...task])
 
-  }
+  
+  
   const completedTheTask = (place) => {
-
+    const ani = new animation();
+    ani.addConfetti() 
     setCompleted([...completed, task.splice(place, 1)])
     setCb(false)
     setTask([...task])
   }
 
+  
+  const deleteTask = (place) => {
+    task.splice(place, 1)
+    setTask([...task])
+
+  }
   const undoTask = (place)=>{
      setTimeout (()=>{
       setTask([...task, completed.splice(place, 1)])
